@@ -6,17 +6,18 @@ const translate = require('translate');
 translate.engine = 'google';
 translate.key = process.env.TRANSLATE_KEY;
 
-const PDF_PATH = './files/FILE_NAME.pdf';
+const PDF_PATH = `./files/${process.env.PDF_FILE}.pdf`;
 const FORMATTED_PATH = './files/formatted.txt';
 const TRANSLATED_PATH = './files/translated.txt';
-const FROM_PAGE = 5;
+const FROM_PAGE = 116;
 const TO_PAGE = 226;
 const DESTINATION_LANGUAGE = 'vi';
 
 const initPages = text => {
     const pages = text.split(/\n{2}/g).slice(FROM_PAGE, TO_PAGE);
-    pages.forEach(page => {
-        fs.appendFileSync(FORMATTED_PATH, page + '\n\n\n');
+    pages.forEach((page, index) => {
+        var pageNum = index + FROM_PAGE;
+        fs.appendFileSync(FORMATTED_PATH, `${page}\nPage: ${pageNum}\n\n`);
     });
 
     return pages;
@@ -34,8 +35,9 @@ const printInfo = pages => {
 const translatePages = async pages => {
     const pageLength = pages.length;
     for (let index = 0; index < pageLength; index++) {
+        var pageNum = index + FROM_PAGE;
         const translatedText = await translate(pages[index], DESTINATION_LANGUAGE);
-        fs.appendFileSync(TRANSLATED_PATH, translatedText + '\n\n\n');
+        fs.appendFileSync(TRANSLATED_PATH, `${translatedText}\nPage: ${pageNum}\n\n`);
     }
 };
 
